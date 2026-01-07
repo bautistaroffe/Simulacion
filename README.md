@@ -1,93 +1,218 @@
-# tp4
+# Simulación de Biblioteca Universitaria con Múltiples Líneas de Espera
+
+## Descripción General
+
+Este proyecto implementa un **modelo de simulación de eventos discretos** que representa el funcionamiento de una **biblioteca universitaria** con múltiples líneas de espera (colas), en la cual los estudiantes acceden a distintos servicios atendidos por personal con diferentes capacidades y restricciones operativas.
+
+El objetivo principal del sistema es **analizar el comportamiento de las colas**, los **tiempos de espera**, la **ocupación de los servidores** y el impacto de **interrupciones de servicio**, permitiendo evaluar el desempeño del sistema bajo distintos escenarios y parámetros de entrada.
+
+El proyecto fue desarrollado como trabajo práctico de la materia **Simulación**, y sigue un enfoque clásico de simulación con **reloj de eventos**, **variables de estado**, **eventos de llegada y fin de atención**, y **recolección de métricas estadísticas**.
+
+---
+
+## Alcance del Sistema
+
+El sistema simula el flujo de estudiantes dentro de una biblioteca universitaria que cuenta con **cinco tipos de servicios**, cada uno con su propia línea de espera, servidores y tasas de atención:
+
+- Préstamo de libros  
+- Devolución de libros  
+- Consulta en sala  
+- Acceso a computadoras  
+- Información general  
+
+Cada servicio se modela de forma independiente, pero todos interactúan dentro del mismo entorno de simulación y comparten el reloj global del sistema.
+
+---
+
+## Parámetros de Entrada
+
+### Configuración General
+- **N**: Número total de iteraciones de la simulación.
+- **mostrar_desde**: Iteración inicial a partir de la cual se muestran resultados parciales.
+- **mostrar_hasta**: Iteración final para visualización.
+- **Umbral para probabilidad en cola**: Valor X para calcular la probabilidad de que la cola supere cierta cantidad de personas.
+- **Interrupción de servicio**: Interrupción global de una hora cada 4 horas de simulación.
+
+### Líneas de Espera
+Para cada tipo de servicio se definen:
+- Tasa de llegada (distribución exponencial).
+- Tasa de atención (distribución exponencial).
+- Cantidad de servidores disponibles.
+
+---
+
+## Especificación del Modelo (Enunciado)
+
+Los estudiantes llegan a la biblioteca siguiendo una **distribución exponencial**, con las siguientes tasas de llegada:
+
+- Préstamo de libros: 20 estudiantes/hora  
+- Devolución de libros: 15 estudiantes/hora  
+- Consulta en sala: 10 estudiantes/hora  
+- Acceso a computadoras: 8 estudiantes/hora  
+- Información general: 25 estudiantes/hora  
+
+### Configuración de Servicios
+
+- **Préstamo de Libros**
+  - 3 bibliotecarios
+  - Tasa de atención: 10 estudiantes/hora por servidor
+
+- **Devolución de Libros**
+  - 2 bibliotecarios
+  - Tasa de atención: 12 estudiantes/hora por servidor
+
+- **Consulta en Sala**
+  - 2 asistentes
+  - Tasa de atención: 8 estudiantes/hora por servidor
+
+- **Acceso a Computadoras**
+  - 1 responsable de TI
+  - Tasa de atención: 5 estudiantes/hora
+  - Restricción: máximo 6 computadoras disponibles
+
+- **Información General**
+  - 2 bibliotecarios
+  - Tasa de atención: 15 estudiantes/hora por servidor
+
+---
+
+## Supuestos del Modelo
+
+- Los tiempos entre llegadas y los tiempos de atención siguen **distribuciones exponenciales** con tasas conocidas.
+- Cada tipo de servicio posee su **propia cola independiente**.
+- Los servidores pueden encontrarse en estado **Libre** u **Ocupado**.
+- Las computadoras son un recurso limitado (máximo 6).
+- Las interrupciones afectan temporalmente la atención de los servicios.
+
+---
+
+## Objetos, Estados y Eventos Modelados
+
+### Objetos
+
+- **Estudiante (E)**
+  - Estados: `Espera`, `Siendo Atendido`
+
+- **Servidor (S)**
+  - Estados: `Libre`, `Ocupado`
+
+### Eventos
+
+- Llegada de estudiante (distribución exponencial)
+- Fin de atención (distribución exponencial)
+- Llegada de interrupción
+- Fin de interrupción
+
+---
+
+## Variables de Estado Controladas
+
+- Reloj de simulación
+- Estado de cada servidor
+- Cantidad de personas en cola por servicio
+- Tiempo restante de atención por servidor
+- Cantidad de computadoras ocupadas
+- Total de estudiantes atendidos
+- Acumulación de tiempos de espera
+- Acumulación de ocupación de servidores
+
+El **vector de estado** completo puede consultarse en el siguiente enlace:
+https://docs.google.com/spreadsheets/d/1d0-bGxgkkrQv5oB-L5XL73bEHFpCURwgqTt-P0xtFIw/edit
+
+---
+
+## Métricas y Resultados de Salida
+
+El sistema calcula, entre otras, las siguientes métricas:
+
+- Tiempo promedio de espera por servicio
+- Porcentaje de ocupación de cada servidor
+- Servicio con menor tiempo promedio de espera
+- Probabilidad de que la cola supere un umbral X
+- Impacto de interrupciones sobre los tiempos de atención
+
+---
+
+## Consignas Analizadas
+
+1. ¿Cuál es el tiempo promedio en cola de cada servicio?
+2. ¿Cómo afecta al servidor de devolución una interrupción de una hora cada 4 horas?
+3. ¿Cuál es la probabilidad de que haya más de X personas esperando en la cola del servicio de información general?
+
+---
+
+## Arquitectura del Proyecto
+
+simulacion/
+├── api.py # Definición de la aplicación FastAPI
+├── main.py # Punto de entrada alternativo
+├── core/ # Lógica central de simulación
+├── utils/ # Utilidades y funciones auxiliares
+├── config/ # Configuración de parámetros
+├── resultados/ # Resultados y salidas de la simulación
+├── frontend/ # Interfaz web (Vite)
+├── requirements.txt # Dependencias backend
+└── README.md
 
 
+---
 
-## Getting started
+## Cómo Ejecutar el Proyecto
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+### Backend (FastAPI)
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
 
-## Add your files
+cd backend
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+python -m uvicorn api:app --reload`
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
 
-```
-cd existing_repo
-git remote add origin https://labsys.frc.utn.edu.ar/gitlab/sim/tp4.git
-git branch -M main
-git push -uf origin main
-```
+El backend se ejecuta en:
 
-## Integrate with your tools
+http://127.0.0.1:8000
 
-- [ ] [Set up project integrations](https://labsys.frc.utn.edu.ar/gitlab/sim/tp4/-/settings/integrations)
 
-## Collaborate with your team
+Documentación automática:
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+http://127.0.0.1:8000/docs
 
-## Test and Deploy
+Frontend (Vite)
+cd frontend
+npm install
+npm run dev
 
-Use the built-in continuous integration in GitLab.
+Tech Stack
+Backend
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+Python 3
 
-***
+FastAPI
 
-# Editing this README
+Uvicorn
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+Frontend
 
-## Suggestions for a good README
+Vite
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+JavaScript / React (según configuración)
 
-## Name
-Choose a self-explaining name for your project.
+Librerías Principales
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+FastAPI: framework web para la API
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+Uvicorn: servidor ASGI
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+NumPy: soporte para cálculos numéricos
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+Pydantic: validación de datos
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+Starlette: base ASGI utilizada por FastAPI
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+Estado del Proyecto
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+✔ Simulación funcional
+✔ Métricas implementadas
+✔ Arquitectura modular
+✔ Preparado para extensión y análisis de escenarios
